@@ -2,3 +2,4 @@
 highscores.json
 dist/
 *.cmd
+*.iss
