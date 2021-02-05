@@ -14,7 +14,8 @@ RPC.connect() # Start the handshake loop
 HIGHSCORES = Highscores('highscores.json')
 
 class SceneManager(object):
-    def __init__(this): pass
+    def __init__(this):
+        this.start(MainMenu())
     def start(this, scene):
         this.scene = scene
         this.scene.manager = this

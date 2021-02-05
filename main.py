@@ -1,6 +1,6 @@
 import pygame
 from CONSTANTS import *
-from Scenes import SceneManager, MainMenu #, GameScene
+from Scenes import SceneManager
 from Highscores import Highscores
 
 pygame.init()
@@ -11,7 +11,6 @@ DISPLAY = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption("Avoid")
 
 sceneManager = SceneManager() # scene manager for changing scenes (mainmenu, gamescene, gameover)
-sceneManager.start(MainMenu())
 
 isRunning = True
 
