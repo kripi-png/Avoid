@@ -25,6 +25,61 @@
         }
       ]
     },
+    "level3":{
+      "name": "Level 3",
+      "enemies": [
+        {
+          "name": "enemyEasy",
+          "hp": 120,
+          "attacks": ["bulletWaveEasy"]
+        },
+        {
+          "name": "enemyEasy",
+          "hp": 120,
+          "attacks": ["bulletWaveEasy"]
+        },
+        {
+          "name": "enemyEasy",
+          "hp": 120,
+          "attacks": ["bulletWaveEasy"]
+        },
+        {
+          "name": "enemyEasy",
+          "hp": 120,
+          "attacks": ["bulletWaveEasy"]
+        },
+        {
+          "name": "enemyEasy",
+          "hp": 120,
+          "attacks": ["bulletWaveEasy"]
+        },
+        {
+          "name": "enemyEasy",
+          "hp": 120,
+          "attacks": ["bulletWaveEasy"]
+        },
+        {
+          "name": "enemyEasy",
+          "hp": 120,
+          "attacks": ["bulletWaveEasy"]
+        },
+        {
+          "name": "enemyEasy",
+          "hp": 120,
+          "attacks": ["bulletWaveEasy"]
+        },
+        {
+          "name": "enemyEasy",
+          "hp": 120,
+          "attacks": ["bulletWaveEasy"]
+        },
+        {
+          "name": "enemyEasy",
+          "hp": 120,
+          "attacks": ["bulletWaveEasy"]
+        }
+      ]
+    },
     "legacy":{
       "name": "Legacy",
       "enemies": [
