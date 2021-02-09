@@ -1,6 +1,6 @@
 import pygame, math
 from pygame.math import Vector2
-from Bullet import Bullet
+from .Bullet import Bullet
 
 class HomingBullet(Bullet):
     def __init__(this, loc, angle, image, speed, enemy):

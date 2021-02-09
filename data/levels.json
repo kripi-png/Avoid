@@ -1,0 +1,39 @@
+{
+  "levels":{
+    "level1":{
+      "name": "Level 1",
+      "enemies": [
+        {
+          "name": "enemyEasy",
+          "hp": 200,
+          "attacks": ["bulletWave"]
+        }
+      ]
+    },
+    "level2":{
+      "name": "Level 2",
+      "enemies": [
+        {
+          "name": "enemyEasy",
+          "hp": 150,
+          "attacks": ["bulletWaveEasy"]
+        },
+        {
+          "name": "enemyEasy",
+          "hp": 150,
+          "attacks": ["bulletWaveEasy"]
+        }
+      ]
+    },
+    "legacy":{
+      "name": "Legacy",
+      "enemies": [
+        {
+          "name": "enemy",
+          "hp": 500,
+          "attacks": ["bulletWave", "homingBulletWave"]
+        }
+      ]
+    }
+  }
+}

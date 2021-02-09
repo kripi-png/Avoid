@@ -1,7 +1,7 @@
 import pygame
 from pygame.math import Vector2
 from random import uniform
-from Utils import *
+from ..Utils import *
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(this, loc, angle, image, speed):
