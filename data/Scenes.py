@@ -165,6 +165,7 @@ class GameScene(_Scene):
         this.invul = False
         this.startTime = pygame.time.get_ticks()
         this.time = None
+        if this.levelData["name"] == 'Legacy': this.score = 0
 
     def render(this, DISPLAY):
         DISPLAY.fill(BGCOLOR)
@@ -178,7 +179,7 @@ class GameScene(_Scene):
         this.sprites.empty()
         this.bulletList.empty()
         this.playerBullets.empty()
-        this.manager.start(GameOver(this.time, winner, GameScene(this.levelData)))
+        this.manager.start(GameOver(this.time, winner, GameScene(this.levelData), legacy=this.score))
 
     def update(this):
         timeDelta = this.clock.tick(60) / 1000
@@ -226,6 +227,8 @@ class GameScene(_Scene):
         this.uiManager.update(timeDelta)
         this.time = pygame.time.get_ticks() - this.startTime
 
+        if this.levelData["name"] == 'Legacy': this.score += 1
+
     def handleEvents(this, events):
         for event in events:
             if event.type == pygame.QUIT: sys.exit()
@@ -235,16 +238,17 @@ class GameScene(_Scene):
                 if event.key == K_r: this.manager.start(GameScene(this.levelData)) # toggle invulnerability state
 
 class GameOver(_Scene):
-    def __init__(this, time, winner, currentLevel):
+    def __init__(this, time, winner, currentLevel, legacy=None):
         super(GameOver, this).__init__()
         this.time = time
         this.winner = winner
         this.currentLevel = currentLevel
+        this.legacy = legacy
         this.uiManager = pygame_gui.UIManager((WIDTH, HEIGHT))
 
         HIGHSCORES.load(currentLevel.levelData["name"])
         if this.winner:
-            HIGHSCORES.addScore({"time": time, "date": datetime.strftime(datetime.now(), '%d.%m.%Y-%H:%M')}, currentLevel.levelData["name"])
+            HIGHSCORES.addScore({"time": legacy, "date": datetime.strftime(datetime.now(), '%d.%m.%Y-%H:%M')}, currentLevel.levelData["name"])
 
         this.startButton = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((WIDTH / 2 - 100, -200 + HEIGHT / 2 - 50), (200, 50)),
@@ -258,7 +262,7 @@ class GameOver(_Scene):
             manager=this.uiManager
         )
 
-        this.text = HIGHSCORES.generateList()
+        this.text = HIGHSCORES.generateList(legacy=legacy)
         this.highscoreList = pygame_gui.elements.UITextBox(
             relative_rect=pygame.Rect((WIDTH / 2 - 400, HEIGHT / 2 - 50), (800, 400)),
             html_text=this.text,
@@ -291,7 +295,9 @@ class GameOver(_Scene):
         this.uiManager.draw_ui(DISPLAY)
 
         # display score
-        text = f"You won! Your time: {formatTime(this.time)}" if this.winner else f"You lost!"
+        if this.legacy:
+            text = f"You won! You got {this.legacy} points!" if this.winner else f"You lost! You got {this.legacy} points."
+        else: text = f"You won! Your time: {formatTime(this.time)}" if this.winner else f"You lost!"
         font = pygame.font.Font(None, 24)
         scoreText = font.render(text, True, 0x000000)
         DISPLAY.blit(scoreText, ((WIDTH - scoreText.get_size()[0]) / 2, 100))
