@@ -1,16 +1,18 @@
 import json, os
+from .Utils import formatTime
 
 class Highscores(object):
     def __init__(this, filename):
         super(Highscores, this).__init__()
         this.filename = filename
+        this.levelName = None
         if not os.path.exists(this.filename): # if datafile does not exist
             with open(this.filename, 'w') as jsonfile:
-                json.dump({"data": []}, jsonfile)
+                json.dump({"data": {}}, jsonfile)
 
-        this.load()
-
-    def load(this):
+    def load(this, level):
+        this.levelName = level
+        # print(level)
         with open(this.filename) as jsonfile:
             try:
                 this.data = json.load(jsonfile)["data"]
@@ -24,17 +26,21 @@ class Highscores(object):
             data = {"data": this.data}
             json.dump(data, jsonfile)
 
-    def sort(this): this.data = sorted(this.data, key = lambda i: i["score"]) # sort the list
+    def sort(this):
+        # print(this.data[this.levelName])
+        if not this.levelName in this.data.keys(): this.data[this.levelName] = []
+        this.data[this.levelName] = sorted(this.data[this.levelName], key = lambda i: i["time"]) # sort the list
 
-    def addScore(this, score):
-        this.data.append(score)
+    def addScore(this, score, level):
+        this.data[this.levelName].append(score)
         this.sort()
-        this.data = this.data[0:19] # remove extras if there are any
+        this.data[this.levelName] = this.data[this.levelName][0:19] # remove extras if there are any
         this.save()
-        this.load()
+        this.load(level)
 
     def generateList(this):
         text = "Highscores<br>"
-        for score in this.data:
-            text += "{1} ({0})<br>".format(score["date"], score["score"])
+        for score in this.data[this.levelName]:
+            print(score)
+            text += f"- {formatTime(score['time'])} ({score['date']})<br>"
         return text

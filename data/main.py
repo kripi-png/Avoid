@@ -12,12 +12,9 @@ def main():
     # constants
     DISPLAY = pygame.display.set_mode((WIDTH,HEIGHT))
     pygame.display.set_caption("Avoid")
-
     sceneManager = SceneManager() # scene manager for changing scenes (mainmenu, gamescene, gameover)
 
-    isRunning = True
-
-    while isRunning:
+    while True:
         # scene manager calls the functions of whatever scene is currently active
         sceneManager.scene.handleEvents(pygame.event.get())
         sceneManager.scene.update()

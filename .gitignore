@@ -1,6 +1,6 @@
-__pycache__
-highscores.json
+__pycache__/
 dist/
+
 *.cmd
-TODO.txt
-changelog.txt
+*.txt
+highscores.json

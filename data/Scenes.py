@@ -14,9 +14,7 @@ from .components.Side import Side
 # from .components.Bullet import Bullet
 
 ASSETLOADER = AssetLoader()
-
 HIGHSCORES = Highscores('data/highscores.json')
-HIGHSCORES.load()
 RPC = Presence(DISCORD_CLIENT_ID,pipe=0) # Initialize the client class
 # RPC.connect() # Start the handshake loop
 
@@ -51,13 +49,6 @@ class MainMenu(_Scene):
         this.startButton = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((WIDTH / 2 - 100, -200 + HEIGHT / 2 - 50), (200, 100)),
             text='Select Level',
-            manager=this.uiManager
-        )
-
-        this.text = HIGHSCORES.generateList()
-        this.highscoreList = pygame_gui.elements.UITextBox(
-            relative_rect=pygame.Rect((WIDTH / 2 - 400, HEIGHT / 2 - 50), (800, 400)),
-            html_text=this.text,
             manager=this.uiManager
         )
 
@@ -121,7 +112,6 @@ class LevelSelect(_Scene):
         timeDelta = this.clock.tick(30) / 1000
         this.uiManager.update(timeDelta)
 
-
     def handleEvents(this, events):
         for event in events:
             if event.type == pygame.QUIT: sys.exit()
@@ -131,7 +121,6 @@ class LevelSelect(_Scene):
             if event.type == pygame.USEREVENT:
              if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                  this.manager.start(GameScene(this.levels[event.ui_element.__dict__["object_ids"][0]]))
-                 # if event.ui_element == this.startButton:
 
             this.uiManager.process_events(event)
 
@@ -173,7 +162,8 @@ class GameScene(_Scene):
             manager=this.uiManager
         )
         this.invul = False
-        this.score = 0
+        this.startTime = pygame.time.get_ticks()
+        this.time = None
 
     def render(this, DISPLAY):
         DISPLAY.fill(BGCOLOR)
@@ -187,8 +177,7 @@ class GameScene(_Scene):
         this.sprites.empty()
         this.bulletList.empty()
         this.playerBullets.empty()
-        this.manager.start(GameOver(this.score, winner, GameScene(this.levelData)))
-        return;
+        this.manager.start(GameOver(this.time, winner, GameScene(this.levelData)))
 
     def update(this):
         timeDelta = this.clock.tick(60) / 1000
@@ -232,9 +221,8 @@ class GameScene(_Scene):
         pygame.sprite.groupcollide(this.sides, this.bulletList, False, True)
         pygame.sprite.groupcollide(this.sides, this.playerBullets, False, True)
 
-        this.score += 1
-
         this.uiManager.update(timeDelta)
+        this.time = pygame.time.get_ticks() - this.startTime
 
     def handleEvents(this, events):
         for event in events:
@@ -245,17 +233,16 @@ class GameScene(_Scene):
                 if event.key == K_r: this.manager.start(GameScene(this.levelData)) # toggle invulnerability state
 
 class GameOver(_Scene):
-    def __init__(this, score, winner, currentLevel):
+    def __init__(this, time, winner, currentLevel):
         super(GameOver, this).__init__()
-        this.score = score
+        this.time = time
         this.winner = winner
         this.currentLevel = currentLevel
         this.uiManager = pygame_gui.UIManager((WIDTH, HEIGHT))
 
-        HIGHSCORES.load()
-
+        HIGHSCORES.load(currentLevel.levelData["name"])
         if this.winner:
-            HIGHSCORES.addScore({"score": score, "date": datetime.strftime(datetime.now(), '%d.%m.%Y-%H:%M')})
+            HIGHSCORES.addScore({"time": time, "date": datetime.strftime(datetime.now(), '%d.%m.%Y-%H:%M')}, currentLevel.levelData["name"])
 
         this.startButton = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((WIDTH / 2 - 100, -200 + HEIGHT / 2 - 50), (200, 50)),
@@ -276,14 +263,13 @@ class GameOver(_Scene):
             manager=this.uiManager
         )
 
-        # RPC.update(details=f"Game Over - {this.score} points", state=f"Highscore: {highscore}")
+        # RPC.update(details=f"Game Over - {this.time} points", state=f"Highscore: {highscore}")
 
     def handleEvents(this, events):
         for event in events:
             if event.type == pygame.QUIT: sys.exit()
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE: sys.exit()
-
             if event.type == pygame.USEREVENT:
                 if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                     if event.ui_element == this.startButton:
@@ -299,7 +285,7 @@ class GameOver(_Scene):
         this.uiManager.draw_ui(DISPLAY)
 
         # display score
-        text = f"You won! You got {this.score} points" if this.winner else f"You lost! You got {this.score} points"
+        text = f"You won! Your time: {formatTime(this.time)}" if this.winner else f"You lost!"
         font = pygame.font.Font(None, 24)
         scoreText = font.render(text, True, 0x000000)
         DISPLAY.blit(scoreText, ((WIDTH - scoreText.get_size()[0]) / 2, 100))
@@ -307,7 +293,3 @@ class GameOver(_Scene):
     def update(this):
         timeDelta = this.clock.tick(30) / 1000
         this.uiManager.update(timeDelta)
-
-        highscore = '-'
-        if len(HIGHSCORES.data) > 0:
-            highscore = HIGHSCORES.data[0]['score']
