@@ -12,7 +12,6 @@ class Highscores(object):
 
     def load(this, level):
         this.levelName = level
-        # print(level)
         with open(this.filename) as jsonfile:
             try:
                 this.data = json.load(jsonfile)["data"]
@@ -27,7 +26,6 @@ class Highscores(object):
             json.dump(data, jsonfile)
 
     def sort(this):
-        # print(this.data[this.levelName])
         if not this.levelName in this.data.keys(): this.data[this.levelName] = []
         this.data[this.levelName] = sorted(this.data[this.levelName], key = lambda i: i["time"]) # sort the list
 
@@ -41,6 +39,5 @@ class Highscores(object):
     def generateList(this):
         text = "Highscores<br>"
         for score in this.data[this.levelName]:
-            print(score)
             text += f"- {formatTime(score['time'])} ({score['date']})<br>"
         return text

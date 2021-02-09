@@ -25,7 +25,6 @@ class SceneManager(object):
     """
     def __init__(this):
         this.levels = readLevelsFile()["levels"]
-
         this.start(MainMenu())
 
     def start(this, scene):
@@ -62,7 +61,6 @@ class MainMenu(_Scene):
         timeDelta = this.clock.tick(30) / 1000
         this.uiManager.update(timeDelta)
 
-
     def handleEvents(this, events):
         for event in events:
             if event.type == pygame.QUIT: sys.exit()
@@ -72,6 +70,8 @@ class MainMenu(_Scene):
             if event.type == pygame.USEREVENT:
              if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                  if event.ui_element == this.startButton:
+                     ASSETLOADER.menuClickSound.play()
+                     pygame.time.delay(100)
                      this.manager.start(LevelSelect(this.manager.levels))
 
             this.uiManager.process_events(event)
@@ -120,6 +120,8 @@ class LevelSelect(_Scene):
 
             if event.type == pygame.USEREVENT:
              if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                 ASSETLOADER.menuClickSound.play()
+                 pygame.time.delay(100)
                  this.manager.start(GameScene(this.levels[event.ui_element.__dict__["object_ids"][0]]))
 
             this.uiManager.process_events(event)
@@ -127,7 +129,6 @@ class LevelSelect(_Scene):
 class GameScene(_Scene):
     def __init__(this, levelData):
         super(GameScene, this).__init__()
-        print(levelData)
         this.levelData = levelData
         this.uiManager = pygame_gui.UIManager((WIDTH, HEIGHT))
         this.eventManager = EventManager()
@@ -199,6 +200,7 @@ class GameScene(_Scene):
         colliders = pygame.sprite.groupcollide(this.enemiesGroup, this.playerBullets, False, True)
         if colliders:
             for enemy in colliders:
+                this.enemyHPBar.sprite_to_monitor = enemy
                 ASSETLOADER.hitSound.play()
                 enemy.damage()
                 if enemy.current_health <= 0:
@@ -273,8 +275,12 @@ class GameOver(_Scene):
             if event.type == pygame.USEREVENT:
                 if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                     if event.ui_element == this.startButton:
+                        ASSETLOADER.menuClickSound.play()
+                        pygame.time.delay(100)
                         this.manager.start(this.currentLevel)
                     if event.ui_element == this.backToLevelListButton:
+                        ASSETLOADER.menuClickSound.play()
+                        pygame.time.delay(100)
                         this.manager.start(LevelSelect(this.manager.levels))
 
             this.uiManager.process_events(event)

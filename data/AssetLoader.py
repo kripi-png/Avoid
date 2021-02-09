@@ -9,4 +9,5 @@ class AssetLoader(object):
         this.imagePlayer = loadImage("player")
         print("Loading Sounds"); print("\n")
         this.hitSound = loadSound("hitSound.ogg")
+        this.menuClickSound = loadSound("menuClick.ogg")
         this.soundAttackWaveEnemy = loadSound("bulletWave.ogg")
