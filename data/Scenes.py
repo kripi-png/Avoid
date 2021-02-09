@@ -150,7 +150,7 @@ class GameScene(_Scene):
         this.enemies = []
         for enemy in this.levelData["enemies"]:
             # hp, img, [], player, sound
-            enemy = Enemy(enemy["hp"], enemy["attacks"], ASSETLOADER.imageEnemyAaro, this.bulletList, this, ASSETLOADER.soundAttackWaveEnemy)
+            enemy = Enemy(enemy["hp"], enemy["attacks"], ASSETLOADER.imageEnemyEye, this.bulletList, this, ASSETLOADER.soundAttackWaveEnemy)
             this.enemies.append(enemy)
             this.sprites.add(enemy)
             this.enemiesGroup.add(enemy)

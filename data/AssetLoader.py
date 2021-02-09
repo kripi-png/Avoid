@@ -5,8 +5,7 @@ class AssetLoader(object):
         super(AssetLoader, this).__init__()
 
         print("Loading Images")
-        this.imageEnemy = loadImage("eyeBoss")
-        this.imageEnemyAaro = loadImage("aaroBoss")
+        this.imageEnemyEye = loadImage("eyeBoss")
         this.imagePlayer = loadImage("player")
         print("Loading Sounds"); print("\n")
         this.hitSound = loadSound("hitSound.ogg")
