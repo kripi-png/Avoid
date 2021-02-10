@@ -185,7 +185,7 @@ class GameScene(_Scene):
         this.time = None
 
         if levelData["name"] != "Legacy":
-            this.eventManager.addEvent("spawnPickUp", this.spawnPickUp, 4000)
+            this.eventManager.addEvent("spawnPickup", this.spawnPickup, 4000)
 
     def render(this, DISPLAY):
         DISPLAY.fill(BGCOLOR)
@@ -196,13 +196,14 @@ class GameScene(_Scene):
 
     def gameOver(this, winner):
         this.player.kill() # stop player events
-        this.eventManager.removeEvent("spawnPickUp")
+        if this.levelData["name"] != 'Legacy':
+            this.eventManager.removeEvent("spawnPickup")
         this.sprites.empty()
         this.bulletList.empty()
         this.playerBullets.empty()
         this.manager.start(GameOver(this.time, winner, GameScene(this.levelData), legacy=this.score if this.levelData["name"] == "Legacy" else None))
 
-    def spawnPickUp(this):
+    def spawnPickup(this):
         pickup = random.choice(this.possiblePickups)()
         this.pickUpList.add(pickup)
         this.sprites.add(pickup)
