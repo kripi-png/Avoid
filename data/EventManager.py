@@ -7,6 +7,8 @@ class EventManager(object):
         this.time = None
 
     def addEvent(this, name, callback, time):
+        if time <= 0:
+            raise ValueError
         event = {}
         event["name"] = name
         event["callback"] = callback
@@ -25,6 +27,8 @@ class EventManager(object):
         raise KeyError
 
     def editEvent(this, name, callback, time):
+        if time <= 0:
+            raise ValueError
         this.eventList[this.findIndexByName(name)] = {
             "name": name,
             "callback": callback,
