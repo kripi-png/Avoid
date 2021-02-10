@@ -1,6 +1,8 @@
 __pycache__/
-dist/
+build/
+audacity/
 
 *.cmd
 *.txt
 highscores.json
+setup.py
