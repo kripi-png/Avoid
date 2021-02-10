@@ -1,4 +1,4 @@
-import pygame, pygame_gui, sys
+import pygame, pygame_gui, sys, random
 from datetime import datetime
 from pygame.locals import *
 from pypresence import Presence
@@ -12,7 +12,7 @@ ASSETLOADER = AssetLoader()
 from .components.Player import Player
 from .components.Enemy import Enemy
 from .components.Side import Side
-from .components.PickUp import FireRatePickUp
+from .components.PickUp import FirerateUpPickup
 # from .components.Bullet import Bullet
 
 HIGHSCORES = Highscores('data/highscores.json')
@@ -148,6 +148,8 @@ class GameScene(_Scene):
         this.uiManager = pygame_gui.UIManager((WIDTH, HEIGHT), 'data/theme.json')
         this.eventManager = EventManager()
 
+        this.possiblePickups = [ FirerateUpPickup ]
+
         # create invisible borders which are used for destroying bullets
         this.sides = pygame.sprite.Group()
         this.sides.add(Side(0,0,2,HEIGHT))       # right
@@ -201,7 +203,7 @@ class GameScene(_Scene):
         this.manager.start(GameOver(this.time, winner, GameScene(this.levelData), legacy=this.score if this.levelData["name"] == "Legacy" else None))
 
     def spawnPickUp(this):
-        pickup = FireRatePickUp()
+        pickup = random.choice(this.possiblePickups)()
         this.pickUpList.add(pickup)
         this.sprites.add(pickup)
 
