@@ -33,6 +33,10 @@ class SceneManager(object):
 
 
 class _Scene(object):
+    """
+    Base object for scenes. This should only be used as a parent class for Scenes and no
+    direct _Scene object should ever be created.
+    """
     def __init__(this):
         this.clock = pygame.time.Clock()
     def render(this): raise NotImplementedError
@@ -127,6 +131,9 @@ class LevelSelect(_Scene):
             this.uiManager.process_events(event)
 
 class GameScene(_Scene):
+    """
+    main game logic
+    """
     def __init__(this, levelData):
         super(GameScene, this).__init__()
         this.levelData = levelData
@@ -242,6 +249,9 @@ class GameScene(_Scene):
                 if event.key == K_r: this.manager.start(GameScene(this.levelData)) # toggle invulnerability state
 
 class GameOver(_Scene):
+    """
+    game over screen
+    """
     def __init__(this, time, winner, currentLevel, legacy=None):
         super(GameOver, this).__init__()
         this.time = time
