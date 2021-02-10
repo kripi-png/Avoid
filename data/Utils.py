@@ -1,7 +1,7 @@
 import os, pygame, json
 
 def loadImage(n):
-    return pygame.image.load('assets/img/'+n+".png")
+    return pygame.image.load('assets/img/'+n)
 
 def loadSound(n):
     return pygame.mixer.Sound('assets/audio/'+n)
