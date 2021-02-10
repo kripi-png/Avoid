@@ -12,6 +12,7 @@ ASSETLOADER = AssetLoader()
 from .components.Player import Player
 from .components.Enemy import Enemy
 from .components.Side import Side
+from .components.PickUp import FireRatePickUp
 # from .components.Bullet import Bullet
 
 HIGHSCORES = Highscores('data/highscores.json')
@@ -158,14 +159,15 @@ class GameScene(_Scene):
         this.enemiesGroup = pygame.sprite.Group() # a group for enemies only
         this.bulletList = pygame.sprite.Group()
         this.playerBullets = pygame.sprite.Group()
-        # damage, attackSpeed, img
-        this.player = Player(15, 0.2, ASSETLOADER.imagePlayer, this)
+        this.pickUpList = pygame.sprite.Group()
+        # damage, fireRate, img
+        this.player = Player(15, 4, this)
         this.sprites.add(this.player)
 
         this.enemies = []
         for enemy in this.levelData["enemies"]:
-            # hp, img, [], player, sound
-            enemy = Enemy(enemy["hp"], enemy["attacks"], ASSETLOADER.imageEnemyEye, this.bulletList, this, ASSETLOADER.soundAttackWaveEnemy)
+            # hp, unique ID, [], player, sound
+            enemy = Enemy(enemy["hp"], enemy["attacks"], 'enemy'+str(len(this.enemies)), this.bulletList, this, ASSETLOADER.soundAttackWaveEnemy)
             this.enemies.append(enemy)
             this.sprites.add(enemy)
             this.enemiesGroup.add(enemy)
@@ -180,6 +182,9 @@ class GameScene(_Scene):
         this.startTime = pygame.time.get_ticks()
         this.time = None
 
+        if levelData["name"] != "Legacy":
+            this.eventManager.addEvent("spawnPickUp", this.spawnPickUp, 4000)
+
     def render(this, DISPLAY):
         DISPLAY.fill(BGCOLOR)
         this.sprites.draw(DISPLAY)
@@ -189,10 +194,16 @@ class GameScene(_Scene):
 
     def gameOver(this, winner):
         this.player.kill() # stop player events
+        this.eventManager.removeEvent("spawnPickUp")
         this.sprites.empty()
         this.bulletList.empty()
         this.playerBullets.empty()
         this.manager.start(GameOver(this.time, winner, GameScene(this.levelData), legacy=this.score if this.levelData["name"] == "Legacy" else None))
+
+    def spawnPickUp(this):
+        pickup = FireRatePickUp()
+        this.pickUpList.add(pickup)
+        this.sprites.add(pickup)
 
     def update(this):
         timeDelta = this.clock.tick(60) / 1000
@@ -211,9 +222,14 @@ class GameScene(_Scene):
         # if player touches an enemy
         if pygame.sprite.spritecollide(this.player, this.enemiesGroup, False) and not this.invul:
             this.gameOver(False)
+        # if player collects a pickup
+        collidingBoxes = pygame.sprite.spritecollide(this.player, this.pickUpList, True)
+        if collidingBoxes:
+            for box in collidingBoxes:
+                box.pickUp(this.player)
 
         # if player bullet hits the enemy
-        colliders = pygame.sprite.groupcollide(this.enemiesGroup, this.playerBullets, False, True)
+        colliders = pygame.sprite.groupcollide(this.enemiesGroup, this.playerBullets, False, True) # group1, group2, kill1, kill2
         if colliders:
             for enemy in colliders:
                 this.enemyHPBar.sprite_to_monitor = enemy

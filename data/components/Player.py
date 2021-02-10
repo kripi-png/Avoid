@@ -1,22 +1,37 @@
 import pygame
 from .Bullet import *
+from ..Scenes import ASSETLOADER
 
 class Player(pygame.sprite.Sprite):
-    def __init__(this, damage, attackSpeed, image, scene):
+    def __init__(this, damage, fireRate, scene):
         super(Player, this).__init__()
-        this.image = image
+        this.image = ASSETLOADER.spritePlayer
         this.damage = damage
+        this.fireRate = fireRate # in seconds
         this.scene = scene
         this.playerBullets = scene.playerBullets
-        this.attackSpeed = attackSpeed # in seconds
         this.rect = this.image.get_rect()
         this.size = this.image.get_size()
 
-        this.scene.eventManager.addEvent('playerAttackEvent', this.attack, int(1000 * this.attackSpeed))
+        this.activeEffects = []
+
+        this.scene.eventManager.addEvent('playerAttackEvent', this.attack, 1000 // this.fireRate)
 
     def update(this):
         pos = pygame.mouse.get_pos()
         this.rect.center = pos
+        this.scene.eventManager.editEvent('playerAttackEvent', this.attack, 1000 // this.fireRate)
+
+        for effect in this.activeEffects:
+            # remove effect from the list if it has expired
+            if pygame.time.get_ticks() - effect["effectApplied"] >= effect["effectLongevity"]:
+                print(effect)
+                print(effect["effectTargetStat"])
+                this.fireRate -= effect["effectStrength"]
+                this.activeEffects.remove(effect)
+                print("firerate buff removed")
+                print(this.fireRate)
+                pass
 
     def attack(this):
         this.playerBullets.add(PlayerBullet(this.rect.center, -90, 5)) # +90 because 0 == right

@@ -24,6 +24,14 @@ class EventManager(object):
                 return i
         raise KeyError
 
+    def editEvent(this, name, callback, time):
+        this.eventList[this.findIndexByName(name)] = {
+            "name": name,
+            "callback": callback,
+            "time": time,
+            "lastTime": this.eventList[this.findIndexByName(name)]["lastTime"]
+        }
+
     def checkEvents(this, time):
         if not this.time: this.time = time
         for event in this.eventList:
