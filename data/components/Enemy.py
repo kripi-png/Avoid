@@ -5,8 +5,7 @@
 import pygame
 import math
 from random import randint
-from .Bullet import Bullet
-from .HomingBullet import HomingBullet
+from .Bullet import *
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(this, health, attacks, image, bulletList, scene, attackSound):
@@ -45,7 +44,7 @@ class Enemy(pygame.sprite.Sprite):
         bc = 6 # bulletCount
         sa = -60 # startingAngle
         for i in range(bc):
-            this.bulletList.add(Bullet(this.rect.center, sa + 90, 'bullet', 5)) # +90 because 0 == right
+            this.bulletList.add(Bullet(this.rect.center, sa + 90, 5)) # +90 because 0 == right
             sa += 120 / bc
 
     def bulletWave(this):
@@ -53,7 +52,7 @@ class Enemy(pygame.sprite.Sprite):
         bc = 12 # bulletCount
         sa = -60 # startingAngle
         for i in range(bc):
-            this.bulletList.add(Bullet(this.rect.center, sa + 90, 'bullet', 5)) # +90 because 0 == right
+            this.bulletList.add(Bullet(this.rect.center, sa + 90, 5)) # +90 because 0 == right
             sa += 120 / bc
 
     def homingBulletWave(this):
@@ -61,7 +60,7 @@ class Enemy(pygame.sprite.Sprite):
         bc = 4 # bulletCount
         sa = -60 # startingAngle
         for i in range(bc):
-            this.bulletList.add(HomingBullet(this.rect.center, sa + 90, 'bulletHoming', 7, this.enemy)) # +90 because 0 == right
+            this.bulletList.add(HomingBullet(this.rect.center, sa + 90, 7, this.enemy)) # +90 because 0 == right
             sa += 120 / bc
 
     def damage(this): # take damage

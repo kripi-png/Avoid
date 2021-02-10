@@ -1,5 +1,5 @@
 import pygame
-from .Bullet import Bullet
+from .Bullet import *
 
 class Player(pygame.sprite.Sprite):
     def __init__(this, damage, attackSpeed, image, scene):
@@ -19,7 +19,7 @@ class Player(pygame.sprite.Sprite):
         this.rect.center = pos
 
     def attack(this):
-        this.playerBullets.add(Bullet(this.rect.center, -90, 'playerBullet', 5)) # +90 because 0 == right
+        this.playerBullets.add(PlayerBullet(this.rect.center, -90, 5)) # +90 because 0 == right
 
     def kill(this):
         this.scene.eventManager.removeEvent('playerAttackEvent')

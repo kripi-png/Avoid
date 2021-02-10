@@ -6,6 +6,10 @@ class AssetLoader(object):
         print("Loading Images")
         this.imageEnemyEye = loadImage("eyeBoss.png")
         this.imagePlayer = loadImage("player.png")
+
+        this.bulletNormal = loadImage("bulletNormal.png")
+        this.bulletHoming = loadImage("bulletHoming.png")
+        this.bulletPlayer = loadImage("bulletPlayer.png")
         print("Loading Sounds"); print("\n")
         this.hitSound = loadSound("hitSound.ogg")
         this.menuClickSound = loadSound("menuClick.ogg")
