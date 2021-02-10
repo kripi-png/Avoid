@@ -25,13 +25,8 @@ class Player(pygame.sprite.Sprite):
         for effect in this.activeEffects:
             # remove effect from the list if it has expired
             if pygame.time.get_ticks() - effect["effectApplied"] >= effect["effectLongevity"]:
-                print(effect)
-                print(effect["effectTargetStat"])
                 this.fireRate -= effect["effectStrength"]
                 this.activeEffects.remove(effect)
-                print("firerate buff removed")
-                print(this.fireRate)
-                pass
 
     def attack(this):
         this.playerBullets.add(PlayerBullet(this.rect.center, -90, 5)) # +90 because 0 == right
