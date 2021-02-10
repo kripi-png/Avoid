@@ -43,7 +43,7 @@ class MainMenu(_Scene):
     """Main menu screen"""
     def __init__(this):
         super(MainMenu, this).__init__()
-        this.uiManager = pygame_gui.UIManager((WIDTH, HEIGHT))
+        this.uiManager = pygame_gui.UIManager((WIDTH, HEIGHT), 'data/theme.json')
 
         this.startButton = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((WIDTH / 2 - 100, -200 + HEIGHT / 2 - 50), (200, 100)),
@@ -81,7 +81,7 @@ class LevelSelect(_Scene):
     def __init__(this, levels):
         super(LevelSelect, this).__init__()
         this.clock = pygame.time.Clock()
-        this.uiManager = pygame_gui.UIManager((WIDTH, HEIGHT))
+        this.uiManager = pygame_gui.UIManager((WIDTH, HEIGHT), 'data/theme.json')
         this.levels = levels
 
         buttonX, buttonY = WIDTH / 2 - 520, -200 + HEIGHT / 2 - 50
@@ -130,7 +130,7 @@ class GameScene(_Scene):
     def __init__(this, levelData):
         super(GameScene, this).__init__()
         this.levelData = levelData
-        this.uiManager = pygame_gui.UIManager((WIDTH, HEIGHT))
+        this.uiManager = pygame_gui.UIManager((WIDTH, HEIGHT), 'data/theme.json')
         this.eventManager = EventManager()
 
         # create invisible borders which are used for destroying bullets
@@ -158,7 +158,7 @@ class GameScene(_Scene):
 
         # HP Bar
         this.enemyHPBar = pygame_gui.elements.UIScreenSpaceHealthBar(
-            relative_rect=pygame.Rect((10,10),(100,50)),
+            relative_rect=pygame.Rect((20,20),(200,30)),
             sprite_to_monitor=this.enemies[0],
             manager=this.uiManager
         )
@@ -184,7 +184,6 @@ class GameScene(_Scene):
         timeDelta = this.clock.tick(60) / 1000
 
         if pygame.time.get_ticks() - this.startTime >= 2500:
-            print(pygame.time.get_ticks(), this.startTime, pygame.time.get_ticks() - this.startTime)
             this.eventManager.checkEvents(pygame.time.get_ticks())
 
         this.sprites.update()
@@ -214,6 +213,7 @@ class GameScene(_Scene):
                     enemy.dead = True
 
                 if all([x.dead for x in this.enemies]):
+                    this.enemyHPBar.kill()
                     this.gameOver(True) # winner=True
 
         # if the enemy hits a wall
@@ -248,7 +248,7 @@ class GameOver(_Scene):
         this.winner = winner
         this.currentLevel = currentLevel
         this.legacy = legacy
-        this.uiManager = pygame_gui.UIManager((WIDTH, HEIGHT))
+        this.uiManager = pygame_gui.UIManager((WIDTH, HEIGHT), 'data/theme.json')
 
         HIGHSCORES.load(currentLevel.levelData["name"])
         if this.winner:

@@ -1,0 +1,13 @@
+{
+  "screen_space_health_bar": {
+    "colours": {
+       "normal_border": "#AAAAAA",
+       "filled_bar": "#f7918c",
+       "unfilled_bar": "#ffe2e2"
+    },
+    "misc": {
+      "shape": "rounded_rectangle",
+      "shape_corner_radius": "10"
+    }
+  }
+}
