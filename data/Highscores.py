@@ -36,9 +36,8 @@ class Highscores(object):
         this.save()
         this.load(level)
 
-    def generateList(this, legacy=False):
+    def generateList(this, legacy=None):
         text = "Highscores<br>"
         for score in this.data[this.levelName]:
-            if legacy: text += f"- {score['time']} ({score['date']})<br>"
-            else: text += f"- {formatTime(score['time'])} ({score['date']})<br>"
+            text += f"- {score['time'] if legacy else formatTime(score['time'])} ({score['date']})<br>"
         return text

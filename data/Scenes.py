@@ -165,7 +165,6 @@ class GameScene(_Scene):
         this.invul = False
         this.startTime = pygame.time.get_ticks()
         this.time = None
-        if this.levelData["name"] == 'Legacy': this.score = 0
 
     def render(this, DISPLAY):
         DISPLAY.fill(BGCOLOR)
@@ -179,11 +178,14 @@ class GameScene(_Scene):
         this.sprites.empty()
         this.bulletList.empty()
         this.playerBullets.empty()
-        this.manager.start(GameOver(this.time, winner, GameScene(this.levelData), legacy=this.score))
+        this.manager.start(GameOver(this.time, winner, GameScene(this.levelData), legacy=this.score if this.levelData["name"] == "Legacy" else None))
 
     def update(this):
         timeDelta = this.clock.tick(60) / 1000
-        this.eventManager.checkEvents(pygame.time.get_ticks())
+
+        if pygame.time.get_ticks() - this.startTime >= 2500:
+            print(pygame.time.get_ticks(), this.startTime, pygame.time.get_ticks() - this.startTime)
+            this.eventManager.checkEvents(pygame.time.get_ticks())
 
         this.sprites.update()
         this.bulletList.update(timeDelta)
@@ -227,7 +229,9 @@ class GameScene(_Scene):
         this.uiManager.update(timeDelta)
         this.time = pygame.time.get_ticks() - this.startTime
 
-        if this.levelData["name"] == 'Legacy': this.score += 1
+        if this.levelData["name"] == 'Legacy':
+            if not hasattr(this, 'score'): this.score = 0
+            this.score += 1
 
     def handleEvents(this, events):
         for event in events:
@@ -248,7 +252,8 @@ class GameOver(_Scene):
 
         HIGHSCORES.load(currentLevel.levelData["name"])
         if this.winner:
-            HIGHSCORES.addScore({"time": legacy, "date": datetime.strftime(datetime.now(), '%d.%m.%Y-%H:%M')}, currentLevel.levelData["name"])
+            data = {"time": legacy if legacy else this.time, "date": datetime.strftime(datetime.now(), '%d.%m.%Y-%H:%M')}
+            HIGHSCORES.addScore(data, currentLevel.levelData["name"])
 
         this.startButton = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect((WIDTH / 2 - 100, -200 + HEIGHT / 2 - 50), (200, 50)),
