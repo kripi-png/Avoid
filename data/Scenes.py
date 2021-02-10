@@ -7,16 +7,32 @@ from .CONSTANTS import *
 from .Utils import *
 from .EventManager import EventManager
 from .AssetLoader import AssetLoader
+ASSETLOADER = AssetLoader()
 
 from .components.Player import Player
 from .components.Enemy import Enemy
 from .components.Side import Side
 # from .components.Bullet import Bullet
 
-ASSETLOADER = AssetLoader()
 HIGHSCORES = Highscores('data/highscores.json')
 RPC = Presence(DISCORD_CLIENT_ID,pipe=0) # Initialize the client class
-# RPC.connect() # Start the handshake loop
+RPC.connect() # Start the handshake loop
+
+class Button(pygame_gui.elements.UIButton):
+    """Creates a button using pygame_gui library"""
+    def __init__(
+                self,
+                text,
+                manager,
+                object_id=None,
+                loc=(WIDTH / 2 - 100, -200 + HEIGHT / 2 - 50),
+                size=(200, 100)):
+        super(Button, self).__init__(
+            text=text,
+            manager=manager,
+            object_id=object_id,
+            relative_rect=pygame.Rect(loc,size))
+
 
 class SceneManager(object):
     """
@@ -30,6 +46,7 @@ class SceneManager(object):
     def start(this, scene):
         this.scene = scene
         this.scene.manager = this
+        RPC.update(details=this.scene.description)
 
 
 class _Scene(object):
@@ -39,6 +56,7 @@ class _Scene(object):
     """
     def __init__(this):
         this.clock = pygame.time.Clock()
+        this.description = None
     def render(this): raise NotImplementedError
     def update(this): raise NotImplementedError
     def handleEvents(this): raise NotImplementedError
@@ -48,14 +66,9 @@ class MainMenu(_Scene):
     def __init__(this):
         super(MainMenu, this).__init__()
         this.uiManager = pygame_gui.UIManager((WIDTH, HEIGHT), 'data/theme.json')
+        this.description = "In Menu" # for RPC
 
-        this.startButton = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((WIDTH / 2 - 100, -200 + HEIGHT / 2 - 50), (200, 100)),
-            text='Select Level',
-            manager=this.uiManager
-        )
-
-        # RPC.update(details="In Main Menu")
+        this.startButton = Button('Select Level', this.uiManager)
 
     def render(this, DISPLAY):
         DISPLAY.fill(BGCOLOR)
@@ -84,6 +97,7 @@ class LevelSelect(_Scene):
     """Level Select screen"""
     def __init__(this, levels):
         super(LevelSelect, this).__init__()
+        this.description = "Selecting level" # for RPC
         this.clock = pygame.time.Clock()
         this.uiManager = pygame_gui.UIManager((WIDTH, HEIGHT), 'data/theme.json')
         this.levels = levels
@@ -93,20 +107,13 @@ class LevelSelect(_Scene):
         x,y = 0,0
 
         for level in this.levels:
-            pygame_gui.elements.UIButton(
-                relative_rect=pygame.Rect((buttonX, buttonY), (buttonW, buttonH)),
-                text=this.levels[level]["name"],
-                object_id=level,
-                manager=this.uiManager
-            )
-
+            Button(this.levels[level]["name"], this.uiManager, object_id=level, loc=(buttonX, buttonY), size=(buttonW, buttonH))
             x += 1
             buttonX += 10 + buttonW
             if x >= 5:
                 buttonY += 10 + buttonH
                 x = 0
                 buttonX = WIDTH / 2 - 520
-        # RPC.update(details="Selecting level")
 
     def render(this, DISPLAY):
         DISPLAY.fill(BGCOLOR)
@@ -256,6 +263,7 @@ class GameOver(_Scene):
         super(GameOver, this).__init__()
         this.time = time
         this.winner = winner
+        this.description = "In Menu" # for RPC
         this.currentLevel = currentLevel
         this.legacy = legacy
         this.uiManager = pygame_gui.UIManager((WIDTH, HEIGHT), 'data/theme.json')
@@ -265,17 +273,8 @@ class GameOver(_Scene):
             data = {"time": legacy if legacy else this.time, "date": datetime.strftime(datetime.now(), '%d.%m.%Y-%H:%M')}
             HIGHSCORES.addScore(data, currentLevel.levelData["name"])
 
-        this.startButton = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((WIDTH / 2 - 100, -200 + HEIGHT / 2 - 50), (200, 50)),
-            text='Try Again',
-            manager=this.uiManager
-        )
-
-        this.backToLevelListButton = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((WIDTH / 2 - 100, -140 + HEIGHT / 2 - 50), (200, 50)),
-            text='Level Menu',
-            manager=this.uiManager
-        )
+        this.startButton = Button("Try Again", this.uiManager, loc=(WIDTH / 2 - 100, -200 + HEIGHT / 2 - 50), size=(200,50))
+        this.backToLevelListButton = Button("Level Menu", this.uiManager, loc=(WIDTH / 2 - 100, -140 + HEIGHT / 2 - 50), size=(200,50))
 
         this.text = HIGHSCORES.generateList(legacy=legacy)
         this.highscoreList = pygame_gui.elements.UITextBox(
@@ -304,11 +303,9 @@ class GameOver(_Scene):
 
             this.uiManager.process_events(event)
 
-
     def render(this, DISPLAY):
         DISPLAY.fill(BGCOLOR)
         this.uiManager.draw_ui(DISPLAY)
-
         # display score
         if this.legacy:
             text = f"You won! You got {this.legacy} points!" if this.winner else f"You lost! You got {this.legacy} points."
