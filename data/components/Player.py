@@ -12,7 +12,6 @@ class Player(pygame.sprite.Sprite):
         this.playerBullets = scene.playerBullets
         this.rect = this.image.get_rect()
         this.size = this.image.get_size()
-
         this.activeEffects = []
 
         this.scene.eventManager.addEvent('playerAttackEvent', this.attack, 1000 // this.fireRate)
@@ -25,8 +24,11 @@ class Player(pygame.sprite.Sprite):
         for effect in this.activeEffects:
             # remove effect from the list if it has expired
             if pygame.time.get_ticks() - effect["effectApplied"] >= effect["effectLongevity"]:
-                this.fireRate -= effect["effectStrength"]
                 this.activeEffects.remove(effect)
+
+                if effect["name"].startswith("firerate"):
+                    this.fireRate -= effect["effectStrength"]
+
 
     def attack(this):
         this.playerBullets.add(PlayerBullet(this.rect.center, -90, 5)) # +90 because 0 == right
